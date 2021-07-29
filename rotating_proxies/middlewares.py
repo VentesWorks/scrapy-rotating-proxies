@@ -153,7 +153,12 @@ class RotatingProxyMiddleware(object):
         the same hostname / ip address share the same slot.
         """
         # FIXME: an option to use website address as a part of slot as well?
-        return urlsplit(proxy).hostname
+        # add the proxy as part of slot management to handle in parallel proxies differentiated by port
+        urls = urlsplit(proxy)
+        slot = urls.hostname
+        if urls.port != None:
+            slot = slot + ":" + urls.port
+        return slot
 
     def process_exception(self, request, exception, spider):
         return self._handle_result(request, spider)
